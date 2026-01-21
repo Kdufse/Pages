@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生命如意志永存 - 安讯七旬</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+        }
+        
+        body {
+            background-color: #0f1419;
+            color: #e8e6e3;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(28, 58, 83, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(40, 32, 60, 0.1) 0%, transparent 20%);
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* 顶部标题区域 */
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 40px;
+        }
+        
+        .site-title {
+            font-size: 2.8rem;
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: #4dabf7;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(77, 171, 247, 0.3);
+        }
+        
+        .slogan {
+            font-size: 1.4rem;
+            font-weight: 300;
+            color: #a5d8ff;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        
+        .author {
+            font-size: 1rem;
+            color: #adb5bd;
+            font-style: italic;
+            margin-top: 15px;
+        }
+        
+        /* 网站导航区域 */
+        .nav-section {
+            margin-bottom: 60px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            color: #ced4da;
+            margin-bottom: 25px;
+            text-align: center;
+            letter-spacing: 2px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 1px;
+            background: rgba(77, 171, 247, 0.5);
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .site-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .site-link {
+            background: rgba(30, 35, 40, 0.7);
+            border-radius: 10px;
+            padding: 25px 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .site-link:hover {
+            background: rgba(40, 45, 50, 0.9);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            border-color: rgba(77, 171, 247, 0.3);
+        }
+        
+        .site-link i {
+            font-size: 2rem;
+            color: #4dabf7;
+            margin-bottom: 15px;
+        }
+        
+        .site-link span {
+            font-size: 1.2rem;
+            color: #e9ecef;
+        }
+        
+        /* 时间和天气信息 */
+        .info-panel {
+            background: rgba(30, 35, 40, 0.7);
+            border-radius: 15px;
+            padding: 25px;
+            max-width: 600px;
+            margin: 0 auto 60px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .datetime {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .date {
+            font-size: 1.3rem;
+            color: #adb5bd;
+            margin-bottom: 8px;
+        }
+        
+        .time {
+            font-size: 2.8rem;
+            font-weight: 300;
+            color: #e9ecef;
+            letter-spacing: 2px;
+        }
+        
+        .weather {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .weather-icon {
+            font-size: 2.5rem;
+            margin-right: 20px;
+            color: #ffd43b;
+        }
+        
+        .weather-info {
+            text-align: left;
+        }
+        
+        .location {
+            font-size: 1.2rem;
+            color: #ced4da;
+            margin-bottom: 5px;
+        }
+        
+        .conditions {
+            font-size: 1.1rem;
+            color: #a5d8ff;
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 800px;
+            margin: 0 auto 50px;
+            text-align: center;
+        }
+        
+        .greeting {
+            font-size: 2.2rem;
+            color: #e9ecef;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+        
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #adb5bd;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            color: #6c757d;
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 800px;
+            margin-top: auto;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .site-title {
+                font-size: 2.2rem;
+            }
+            
+            .slogan {
+                font-size: 1.2rem;
+            }
+            
+            .site-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .time {
+                font-size: 2.2rem;
+            }
+            
+            .greeting {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .site-links {
+                grid-template-columns: 1fr;
+            }
+            
+            .site-title {
+                font-size: 1.8rem;
+            }
+            
+            .time {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部标题区域 -->
+        <header class="header">
+            <h1 class="site-title">insyy.top</h1>
+            <p class="slogan">生命如意志永存，青春永远年轻。</p>
+            <p class="author">- 「安讯七旬」</p>
+        </header>
+        
+        <!-- 网站导航区域 -->
+        <section class="nav-section">
+            <h2 class="section-title">网站列表</h2>
+            <div class="site-links">
+                <div class="site-link">
+                    <i class="fas fa-blog"></i>
+                    <span>博客</span>
+                </div>
+                <div class="site-link">
+                    <i class="fas fa-cloud"></i>
+                    <span>网盘</span>
+                </div>
+                <div class="site-link">
+                    <i class="fas fa-music"></i>
+                    <span>音乐</span>
+                </div>
+                <div class="site-link">
+                    <i class="fas fa-home"></i>
+                    <span>起始页</span>
+                </div>
+                <div class="site-link">
+                    <i class="fas fa-link"></i>
+                    <span>网址集</span>
+                </div>
+                <div class="site-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>今日热榜</span>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 时间和天气信息 -->
+        <section class="info-panel">
+            <div class="datetime">
+                <div class="date" id="current-date">2023年12月02日 星期六</div>
+                <div class="time" id="current-time">09:25:44</div>
+            </div>
+            <div class="weather">
+                <div class="weather-icon">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div class="weather-info">
+                    <div class="location">郑州市</div>
+                    <div class="conditions">晴 3℃ 东南风 ≤3级</div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 主要欢迎内容 -->
+        <section class="main-content">
+            <h2 class="greeting">Hello World!</h2>
+            <p class="description">
+                一个建立于21世纪的小站，存活于互联网的边缘。<br>
+                这里记录着思考、技术与生活，像一颗微小的星辰，在数字宇宙中静静闪烁。
+            </p>
+        </section>
+        
+        <!-- 页脚 -->
+        <footer class="footer">
+            <p>© 2023 insyy.top ｜ 生命如意志永存</p>
+        </footer>
+    </div>
+
+    <script>
+        // 更新当前日期和时间
+        function updateDateTime() {
+            const now = new Date();
+            
+            // 格式化日期
+            const year = now.getFullYear();
+            const month = now.getMonth() + 1;
+            const day = now.getDate();
+            
+            const weekdays = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+            const weekday = weekdays[now.getDay()];
+            
+            document.getElementById('current-date').textContent = 
+                `${year}年${month.toString().padStart(2, '0')}月${day.toString().padStart(2, '0')}日 ${weekday}`;
+            
+            // 格式化时间
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            
+            document.getElementById('current-time').textContent = 
+                `${hours}:${minutes}:${seconds}`;
+        }
+        
+        // 初始调用并设置定时器每秒更新
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
+        
+        // 为网站链接添加点击效果
+        document.querySelectorAll('.site-link').forEach(link => {
+            link.addEventListener('click', function() {
+                const linkName = this.querySelector('span').textContent;
+                alert(`即将前往「${linkName}」页面`);
+            });
+        });
+        
+        // 添加一些动态效果
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为网站链接添加随机颜色效果
+            const icons = document.querySelectorAll('.site-link i');
+            const colors = ['#4dabf7', '#51cf66', '#ff6b6b', '#ff922b', '#cc5de8', '#20c997'];
+            
+            icons.forEach((icon, index) => {
+                // 设置每个图标的颜色
+                icon.style.color = colors[index % colors.length];
+                
+                // 添加悬停效果
+                icon.parentElement.addEventListener('mouseenter', function() {
+                    icon.style.transform = 'scale(1.2)';
+                    icon.style.transition = 'transform 0.3s ease';
+                });
+                
+                icon.parentElement.addEventListener('mouseleave', function() {
+                    icon.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
