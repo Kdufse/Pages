@@ -11,9 +11,11 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
         
         :root {
+            /* 浅色模式变量 */
             --primary-color: #4361ee;
             --secondary-color: #3a0ca3;
             --accent-color: #4cc9f0;
@@ -24,14 +26,61 @@
             --border-radius: 12px;
             --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
             --transition: all 0.3s ease;
+            --bg-color: #f5f7fb;
+            --card-bg: white;
+            --footer-bg: white;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #5a7aff;
+            --secondary-color: #4d2fdb;
+            --accent-color: #6bd4f7;
+            --light-color: #343a40;
+            --dark-color: #f8f9fa;
+            --gray-color: #adb5bd;
+            --success-color: #5dd355;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --footer-bg: #1a1a1a;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
         
         body {
-            background-color: #f5f7fb;
+            background-color: var(--bg-color);
             color: var(--dark-color);
             line-height: 1.6;
             min-height: 100vh;
             padding: 20px;
+        }
+        
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--box-shadow);
+            z-index: 999;
+            border: none;
+            font-size: 1.3rem;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .theme-toggle i {
+            transition: transform 0.5s ease;
         }
         
         .container {
@@ -46,6 +95,10 @@
             padding: 20px 0;
             margin-bottom: 30px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-theme="dark"] header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .logo {
@@ -107,6 +160,10 @@
             box-shadow: var(--box-shadow);
         }
         
+        [data-theme="dark"] .hero {
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(76, 201, 240, 0.1) 100%);
+        }
+        
         .hero h1 {
             font-size: 2.8rem;
             margin-bottom: 15px;
@@ -161,7 +218,7 @@
         }
         
         .card {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 30px;
             box-shadow: var(--box-shadow);
@@ -171,6 +228,10 @@
         .card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] .card:hover {
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
         }
         
         .card i {
@@ -198,7 +259,7 @@
         }
         
         .stat-box {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 25px;
             text-align: center;
@@ -225,7 +286,7 @@
         }
         
         .main-content {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 30px;
             box-shadow: var(--box-shadow);
@@ -239,13 +300,17 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
         
+        [data-theme="dark"] .main-content h2 {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
         .main-content p {
             margin-bottom: 20px;
             color: var(--gray-color);
         }
         
         .sidebar {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: var(--border-radius);
             padding: 30px;
             box-shadow: var(--box-shadow);
@@ -259,6 +324,10 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
         
+        [data-theme="dark"] .sidebar h3 {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
         .sidebar ul {
             list-style: none;
         }
@@ -266,6 +335,10 @@
         .sidebar li {
             padding: 12px 0;
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        [data-theme="dark"] .sidebar li {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .sidebar li:last-child {
@@ -291,6 +364,11 @@
             color: var(--gray-color);
             border-top: 1px solid rgba(0, 0, 0, 0.05);
             font-size: 0.9rem;
+            background-color: var(--footer-bg);
+        }
+        
+        [data-theme="dark"] footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
         
         .social-icons {
@@ -340,10 +418,33 @@
             .features {
                 grid-template-columns: 1fr;
             }
+            
+            .theme-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .theme-toggle {
+                bottom: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <i class="fas fa-moon"></i>
+    </button>
+
     <div class="container">
         <header>
             <div class="logo">
@@ -359,89 +460,44 @@
             </nav>
         </header>
         
-        <section class="hero">
-            <h1>创造精致整洁的数字体验</h1>
-            <p>我们专注于打造美观、直观且功能强大的界面，为用户提供卓越的交互体验。每一个细节都经过精心设计，确保视觉与功能的完美结合。</p>
+        <section class="hero" id="home">
+            <h1>作者的个人网站</h1>
+            <p>啥也不会，网站随便乱写的看看就行·</p>
             <div style="display: flex; gap: 15px; margin-top: 10px;">
                 <a href="#" class="btn">开始探索</a>
                 <a href="#" class="btn btn-outline">了解更多</a>
             </div>
         </section>
-        
-        <div class="stats">
-            <div class="stat-box">
-                <div class="stat-value">99%</div>
-                <div class="stat-label">用户满意度</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value">2.5K+</div>
-                <div class="stat-label">项目完成</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value">150+</div>
-                <div class="stat-label">合作客户</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value">24/7</div>
-                <div class="stat-label">技术支持</div>
-            </div>
-        </div>
-        
-        <section class="features">
-            <div class="card">
-                <i class="fas fa-palette"></i>
-                <h3>现代设计</h3>
-                <p>采用最新的设计趋势和最佳实践，打造视觉上令人愉悦且功能强大的界面。</p>
-                <a href="#" class="btn btn-outline" style="padding: 10px 20px;">查看示例</a>
-            </div>
-            <div class="card">
-                <i class="fas fa-mobile-alt"></i>
-                <h3>响应式布局</h3>
-                <p>无论使用何种设备，都能提供一致且优秀的用户体验，完美适配所有屏幕尺寸。</p>
-                <a href="#" class="btn btn-outline" style="padding: 10px 20px;">查看示例</a>
-            </div>
-            <div class="card">
-                <i class="fas fa-bolt"></i>
-                <h3>高效性能</h3>
-                <p>优化代码和加载策略，确保快速加载和流畅交互，提供卓越的性能体验。</p>
-                <a href="#" class="btn btn-outline" style="padding: 10px 20px;">查看示例</a>
-            </div>
-        </section>
+
         
         <div class="content">
             <div class="main-content">
-                <h2>关于精致设计理念</h2>
-                <p>在当今数字时代，用户体验已成为产品成功的关键因素。精致整洁的设计不仅仅是外观的美观，更是功能与形式的完美结合。</p>
-                <p>我们注重每一个细节，从颜色搭配、字体选择到间距和布局，都经过精心考虑，以创造直观、易用且令人愉悦的界面。</p>
-                <p>通过采用现代设计原则和最佳实践，我们确保用户能够轻松地完成他们的任务，同时享受使用过程。</p>
-                <p>我们的设计流程包括用户研究、原型设计、测试和迭代，以确保最终产品既美观又实用。</p>
+                <h2>励志文案</h2>
+                <p>从某种程度上来说，不努力就一定不会成功。</p>
+                <p>每当你呼吸的时候，你其实正在吸入空气。</p>
+                <p>据我观察，没醒的人通常都还睡着。</p>
+                <p>这个问题的答案，就隐藏在问题本身的背后。</p>
+                <p>但凡这句话有点道理，也不至于一点道理都没有。</p>
+                <p>如果你愿意多花一点时间，那么你将会花费更多的时间。</p>
             </div>
             
             <div class="sidebar">
-                <h3>快速链接</h3>
-                <ul>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> 设计原则指南</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> 组件库</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> 最佳实践</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> 设计资源</a></li>
-                    <li><a href="#"><i class="fas fa-chevron-right"></i> 常见问题</a></li>
-                </ul>
-                
                 <h3 style="margin-top: 30px;">我的项目</h3>
                 <ul>
                     <li><a href="https://kdufse.github.io/myrepo/plus"><i class="fas fa-newspaper"></i> APatch Plus</a></li>
-                    <li><a href="https://github.com/Kdufse/XZPatch"><i class="fas fa-newspaper"></i> XZPatch</a></li>
                     <li><a href="https://kdufse.github.io/myrepo/pct"><i class="fas fa-newspaper"></i> PC-Toolbox</a></li>
+                    <li><a href="https://github.com/Kdufse/XZPatch"><i class="fas fa-newspaper"></i> XZPatch</a></li>
+                    <li><a href="https://github.com/Kdufse/ABNToolbox"><i class="fas fa-newspaper"></i> ABNToolbox</a></li>
                 </ul>
             </div>
         </div>
         
         <footer>
             <div class="social-icons">
+                <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
                 <a href="https://space.bilibili.com/3546639595735880"><i class="fab fa-bilibili"></i></a>
                 <a href="https://github.com/Kdufse"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#"><i class="fab fa-dribbble"></i></a>
+                <a href="tencent://AddContact/?fromId=xx&fromSubId=1&subcmd=all&uin=3780745139&website=kdufse.github.io"><i class="ri-qq-line"></i></a>
             </div>
             <p>© 2026 本页面由Github-Pages托管。</p>
             <p>联系作者: <a href="mailto:3780745139@qq.com" style="color: var(--primary-color); text-decoration: none;">3780745139@qq.com</a>（请勿邮箱轰炸）</p>
@@ -449,8 +505,66 @@
     </div>
     
     <script>
-        // 简单的交互效果
+        // 主题切换功能
         document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // 检测系统主题偏好
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            // 从本地存储获取主题设置，如果没有则使用系统设置
+            const savedTheme = localStorage.getItem('theme');
+            
+            // 设置初始主题
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            } else if (prefersDarkScheme.matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateThemeIcon('dark');
+            }
+            
+            // 监听系统主题变化
+            prefersDarkScheme.addEventListener('change', function(e) {
+                if (!savedTheme) { // 只有当用户没有手动设置主题时才跟随系统
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    updateThemeIcon(newTheme);
+                }
+            });
+            
+            // 切换主题
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                // 更新主题
+                document.documentElement.setAttribute('data-theme', newTheme);
+                updateThemeIcon(newTheme);
+                
+                // 保存用户选择到本地存储
+                localStorage.setItem('theme', newTheme);
+                
+                // 添加点击动画
+                themeIcon.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    themeIcon.style.transform = 'rotate(0)';
+                }, 500);
+            });
+            
+            // 更新主题图标
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                    themeIcon.title = '切换到浅色模式';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                    themeIcon.title = '切换到深色模式';
+                }
+            }
+
+            // 原有的交互效果
             // 卡片悬停效果增强
             const cards = document.querySelectorAll('.card');
             cards.forEach(card => {
