@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APatch - 新的安卓内核根解决方案</title>
+    <title>PCToolbox - 一个使用Windows设备通过Adb/Fastboot操作手机内的 ROOT管理器 的批处理脚本</title>
+    <link rel="icon" type="image/png" href="./logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -11,24 +12,75 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
         
         :root {
+            /* 浅色模式变量 */
             --primary-color: #2ecc71;
             --primary-dark: #27ae60;
             --secondary-color: #3498db;
             --dark-color: #2c3e50;
+            --footer-color: #2c3e50;      /*页脚*/
             --light-color: #ecf0f1;
             --text-color: #333;
             --text-light: #777;
+            --bg-color: #fff;
+            --card-bg: #f1f1f1;
+            --section-bg: #f9f9f9;
             --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
         }
         
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #2ecc71;
+            --primary-dark: #27ae60;
+            --secondary-color: #3498db;
+            --dark-color: #ffffff;
+            --footer-color: #222f41;      /*页脚*/
+            --light-color: #ffffff;
+            --text-color: #ecf0f1;
+            --text-light: #bdc3c7;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --section-bg: #1a1a1a;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
         body {
-            background-color: #fff;
+            background-color: var(--bg-color);
             color: var(--text-color);
             overflow-x: hidden;
+        }
+        
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 999;
+            border: none;
+            font-size: 1.3rem;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .theme-toggle i {
+            transition: transform 0.5s ease;
         }
         
         /* 头部导航 */
@@ -41,10 +93,19 @@
             width: 100%;
             top: 0;
             z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(var(--bg-color-rgb), 0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             animation: slideDown 0.8s ease;
+        }
+        
+        /* 计算RGB值用于半透明背景 */
+        :root {
+            --bg-color-rgb: 255, 255, 255;
+        }
+        
+        [data-theme="dark"] {
+            --bg-color-rgb: 18, 18, 18;
         }
         
         .logo {
@@ -95,6 +156,7 @@
             align-items: center;
             justify-content: space-between;
             min-height: 100vh;
+            background-color: var(--bg-color);
         }
         
         .hero-content {
@@ -115,10 +177,7 @@
             font-size: 3.5rem;
             line-height: 1.2;
             margin-bottom: 1.5rem;
-            background: linear-gradient(90deg, var(--dark-color), var(--primary-color));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: var(--dark-color);
         }
         
         .hero h1 span {
@@ -128,7 +187,7 @@
         .version {
             display: inline-block;
             background-color: var(--light-color);
-            padding: 0.5rem 1rem;
+            padding: 0.5rem 1.5rem;
             border-radius: 30px;
             font-weight: 600;
             color: var(--secondary-color);
@@ -164,32 +223,32 @@
         }
         
         .btn-primary {
-            background-color: var(--primary-color);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-5px);
-        }
-        
-        .btn-secondary {
             background-color: var(--secondary-color);
             color: white;
         }
         
-        .btn-secondary:hover {
+        .btn-primary:hover {
             background-color: #2980b9;
             transform: translateY(-5px);
         }
         
+        .btn-secondary {
+            background-color: #7f8c8d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #6c7b7d;
+            transform: translateY(-5px);
+        }
+        
         .btn-light {
-            background-color: var(--light-color);
+            background-color: var(--card-bg);
             color: var(--dark-color);
         }
         
         .btn-light:hover {
-            background-color: #d5dbdb;
+            background-color: var(--light-color);
             transform: translateY(-5px);
         }
         
@@ -197,107 +256,24 @@
             margin-right: 8px;
         }
         
-        /* 安卓机器人动画 */
-        .android-robot {
-            width: 320px;
-            height: 320px;
+        .android-image {
+            width: 640px;
+            height: 360px;
             position: relative;
             animation: float 6s ease-in-out infinite;
         }
         
-        .android-body {
-            width: 180px;
-            height: 100px;
-            background-color: var(--primary-color);
-            border-radius: 20px 20px 0 0;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        
-        .android-head {
-            width: 120px;
-            height: 60px;
-            background-color: var(--primary-color);
-            border-radius: 30px 30px 0 0;
-            position: absolute;
-            top: 25%;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-        
-        .android-antenna {
-            width: 8px;
-            height: 40px;
-            background-color: var(--primary-dark);
-            position: absolute;
-            top: 5%;
-        }
-        
-        .antenna-left {
-            left: 40%;
-            transform: rotate(-20deg);
-        }
-        
-        .antenna-right {
-            right: 40%;
-            transform: rotate(20deg);
-        }
-        
-        .android-eye {
-            width: 20px;
-            height: 20px;
-            background-color: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 15px;
-        }
-        
-        .eye-left {
-            left: 30px;
-        }
-        
-        .eye-right {
-            right: 30px;
-        }
-        
-        .android-arm, .android-leg {
-            width: 30px;
-            height: 80px;
-            background-color: var(--primary-color);
-            position: absolute;
-            border-radius: 15px;
-        }
-        
-        .arm-left {
-            left: -40px;
-            top: 40%;
-            transform: rotate(30deg);
-            animation: waveLeft 3s infinite alternate;
-        }
-        
-        .arm-right {
-            right: -40px;
-            top: 40%;
-            transform: rotate(-30deg);
-            animation: waveRight 3s infinite alternate;
-        }
-        
-        .leg-left {
-            left: 50px;
-            top: 80%;
-        }
-        
-        .leg-right {
-            right: 50px;
-            top: 80%;
+        .android-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 5px 15px rgba(46, 204, 113, 0.3));
         }
         
         /* 功能卡片区 */
         .features {
             padding: 6rem 5%;
-            background-color: #f9f9f9;
+            background-color: var(--section-bg);
         }
         
         .features h2 {
@@ -314,7 +290,7 @@
         }
         
         .feature-card {
-            background-color: white;
+            background-color: var(--card-bg);
             border-radius: 12px;
             padding: 2.5rem 2rem;
             box-shadow: var(--shadow);
@@ -325,30 +301,7 @@
         
         .feature-card:hover {
             transform: translateY(-15px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-        }
-        
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
-        }
-        
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background-color: rgba(46, 204, 113, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
-            font-size: 2rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
         }
         
         .feature-card h3 {
@@ -362,24 +315,9 @@
             line-height: 1.6;
         }
         
-        .feature-card:nth-child(2) .feature-icon {
-            background-color: rgba(52, 152, 219, 0.1);
-            color: var(--secondary-color);
-        }
-        
-        .feature-card:nth-child(3) .feature-icon {
-            background-color: rgba(155, 89, 182, 0.1);
-            color: #9b59b6;
-        }
-        
-        .feature-card:nth-child(4) .feature-icon {
-            background-color: rgba(231, 76, 60, 0.1);
-            color: #e74c3c;
-        }
-        
         /* 页脚 */
         footer {
-            background-color: var(--dark-color);
+            background-color: var(--footer-color);
             color: white;
             text-align: center;
             padding: 3rem 5%;
@@ -471,39 +409,12 @@
             }
         }
         
-        @keyframes waveLeft {
-            0%, 100% {
-                transform: rotate(30deg);
-            }
-            50% {
-                transform: rotate(40deg);
-            }
-        }
-        
-        @keyframes waveRight {
-            0%, 100% {
-                transform: rotate(-30deg);
-            }
-            50% {
-                transform: rotate(-40deg);
-            }
-        }
-        
         @keyframes pulse {
             0%, 100% {
                 box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
             }
             50% {
                 box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);
-            }
-        }
-        
-        @keyframes glow {
-            0%, 100% {
-                filter: drop-shadow(0 0 5px rgba(46, 204, 113, 0.5));
-            }
-            50% {
-                filter: drop-shadow(0 0 20px rgba(46, 204, 113, 0.8));
             }
         }
         
@@ -526,6 +437,13 @@
             
             .features-grid {
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+            
+            .theme-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
             }
         }
         
@@ -552,13 +470,21 @@
                 font-size: 2.2rem;
             }
             
-            .android-robot {
+            .android-image {
                 width: 250px;
                 height: 250px;
             }
             
             .buttons {
                 justify-content: center;
+            }
+            
+            .theme-toggle {
+                bottom: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
             }
         }
         
@@ -576,19 +502,21 @@
     </style>
 </head>
 <body>
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <i class="fas fa-moon"></i>
+    </button>
+
     <!-- 头部导航 -->
     <header>
         <div class="logo">
             <i class="fas fa-code-branch"></i>
-            <span>APatch</span> Docs
+            <span>PC</span> Toolbox
         </div>
         <nav>
             <ul>
                 <li><a href="#home">首页</a></li>
                 <li><a href="#features">功能</a></li>
-                <li><a href="#docs">文档</a></li>
-                <li><a href="#download">下载</a></li>
-                <li><a href="#community">社区</a></li>
             </ul>
         </nav>
     </header>
@@ -597,34 +525,22 @@
     <main>
         <section class="hero" id="home">
             <div class="hero-content">
-                <h1>APatch<br><span>新的安卓内核根解决方案</span></h1>
-                <div class="version">Android 内核版本 3.18-6.6的通用根解决方案</div>
-                <p class="description">APatch 是一个强大的安卓内核级根解决方案，提供比传统用户空间根方案更高的隐藏性和控制能力。通过内核模块和精细的权限控制，重新定义安卓设备的根访问体验。</p>
+                <h1>PC Toolbox<br><span>一个新的工具箱</span></h1>
+                <div class="version">Android Root通用工具箱。</div>
+                <p class="description">PCToolbox本质上属于ABNToolbox的Windows转接版本。</p>
                 <div class="buttons">
-                    <a href="#" class="btn btn-primary">
-                        <i class="fas fa-play-circle"></i> 开始使用
+                    <!-- 按钮链接 -->
+                    <a href="#home" target="_blank" class="btn btn-primary">
+                        <i class="fas fa-play-circle"></i> 开始
                     </a>
-                    <a href="#" class="btn btn-secondary">
+                    <a href="https://github.com/Kdufse/PC-Toolbox" target="_blank" class="btn btn-secondary">
                         <i class="fab fa-github"></i> GitHub 上查看
-                    </a>
-                    <a href="#" class="btn btn-light">
-                        <i class="fas fa-edit"></i> 参与文档制作
                     </a>
                 </div>
             </div>
             <div class="hero-image">
-                <div class="android-robot">
-                    <div class="android-antenna antenna-left"></div>
-                    <div class="android-antenna antenna-right"></div>
-                    <div class="android-head">
-                        <div class="android-eye eye-left"></div>
-                        <div class="android-eye eye-right"></div>
-                    </div>
-                    <div class="android-body"></div>
-                    <div class="android-arm arm-left"></div>
-                    <div class="android-arm arm-right"></div>
-                    <div class="android-leg leg-left"></div>
-                    <div class="android-leg leg-right"></div>
+                <div class="android-image">
+                    <img src="./screen.png" alt="PCToolbox" id="pct-logo">
                 </div>
             </div>
         </section>
@@ -634,35 +550,38 @@
             <h2>核心功能与特性</h2>
             <div class="features-grid">
                 <div class="feature-card fade-in">
-                    <div class="feature-icon">
-                        <i class="fas fa-microchip"></i>
-                    </div>
-                    <h3>基于内核的</h3>
-                    <p>APatch 运行在内核空间，比用户空间根具有更高的隐藏性和控制。直接与内核交互，提供更底层的系统访问能力，同时保持更好的隐蔽性。</p>
+                    <h3>基于Batch</h3>
+                    <p>通过CMD/PowerShell操作脚本控制连接到电脑的设备</p>
                 </div>
                 
                 <div class="feature-card fade-in">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-shield"></i>
-                    </div>
-                    <h3>根访问控制</h3>
-                    <p>只有被允许的应用才能访问或看到用户，其他应用都不知道这一点。细粒度的权限管理确保系统安全，防止恶意应用滥用根权限。</p>
+                    <h3>权限</h3>
+                    <p>无需管理员权限即可运行</p>
                 </div>
                 
                 <div class="feature-card fade-in">
-                    <div class="feature-icon">
-                        <i class="fas fa-puzzle-piece"></i>
-                    </div>
-                    <h3>APModule</h3>
-                    <p>支持类似Magisk的模块系统。通过模块扩展系统功能，兼容现有的Magisk模块生态，同时提供更稳定可靠的运行环境。</p>
+                    <h3>修补Boot</h3>
+                    <p>通过KernelPatch(msys2)实现的Boot修补，当然超级密钥需要手动输入。</p>
                 </div>
                 
                 <div class="feature-card fade-in">
-                    <div class="feature-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <h3>KPModule</h3>
-                    <p>支持允许你向内核注入任意代码的模块（提供内核函数 inline-hook 和 syscall-table-hook）。为高级用户提供深度定制能力。</p>
+                    <h3>终端</h3>
+                    <p>配置了Adb/Fastboot的CMD窗口。</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <h3>刷写镜像</h3>
+                    <p>允许通过Fastboot刷写镜像。</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <h3>快速重启</h3>
+                    <p>通过Adb/Fastboot快速重启设备。</p>
+                </div>
+
+                <div class="feature-card fade-in">
+                    <h3>配置HMAL</h3>
+                    <p>通过复杂的Adb命令配置HideMyAppList。</p>
                 </div>
             </div>
         </section>
@@ -671,23 +590,79 @@
     <!-- 页脚 -->
     <footer>
         <div class="footer-content">
-            <h3>APatch 项目</h3>
-            <p>开源的安卓内核级根解决方案，为开发者和高级用户提供强大的设备控制能力。</p>
+            <h3>PC-Toolbox 项目</h3>
+            <p>开源的工具。</p>
             <div class="social-links">
-                <a href="#"><i class="fab fa-github"></i></a>
-                <a href="#"><i class="fab fa-telegram"></i></a>
-                <a href="#"><i class="fab fa-twitter"></i></a>
-                <a href="#"><i class="fab fa-discord"></i></a>
+                <!-- 为社交媒体链接添加示例链接 -->
+                <a href="https://github.com/Kdufse/PC-Toolbox" target="_blank"><i class="fab fa-github"></i></a>
             </div>
             <div class="copyright">
-                &copy; 2026 APatch 项目. 本页面仅为演示用途，APatch是开源项目。
+                &copy; 2026 本页面由Github-Pages提供。
             </div>
         </div>
     </footer>
 
     <script>
-        // 滚动动画
+        // 主题切换功能
         document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // 检测系统主题偏好
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            // 从本地存储获取主题设置，如果没有则使用系统设置
+            const savedTheme = localStorage.getItem('theme');
+            
+            // 设置初始主题
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            } else if (prefersDarkScheme.matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateThemeIcon('dark');
+            }
+            
+            // 监听系统主题变化
+            prefersDarkScheme.addEventListener('change', function(e) {
+                if (!savedTheme) { // 只有当用户没有手动设置主题时才跟随系统
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    updateThemeIcon(newTheme);
+                }
+            });
+            
+            // 切换主题
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                // 更新主题
+                document.documentElement.setAttribute('data-theme', newTheme);
+                updateThemeIcon(newTheme);
+                
+                // 保存用户选择到本地存储
+                localStorage.setItem('theme', newTheme);
+                
+                // 添加点击动画
+                themeIcon.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    themeIcon.style.transform = 'rotate(0)';
+                }, 500);
+            });
+            
+            // 更新主题图标
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                    themeIcon.title = '切换到浅色模式';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                    themeIcon.title = '切换到深色模式';
+                }
+            }
+            
+            // 滚动动画
             const fadeElements = document.querySelectorAll('.fade-in');
             
             const fadeInOnScroll = function() {
@@ -707,37 +682,42 @@
             // 滚动时检查
             window.addEventListener('scroll', fadeInOnScroll);
             
-            // 为安卓机器人添加点击动画
-            const androidRobot = document.querySelector('.android-robot');
-            androidRobot.addEventListener('click', function() {
-                this.style.animation = 'glow 1.5s ease, float 6s ease-in-out infinite';
-                
-                // 1.5秒后恢复原始动画
-                setTimeout(() => {
+            // 为安卓机器人图片添加点击动画
+            const androidImage = document.getElementById('pct-logo');
+            if(androidImage) {
+                androidImage.addEventListener('click', function() {
                     this.style.animation = 'float 6s ease-in-out infinite';
-                }, 1500);
-            });
+                    
+                    // 添加点击动画
+                    this.style.transform = 'scale(1.1)';
+                    
+                    // 1秒后恢复原始动画
+                    setTimeout(() => {
+                        this.style.transform = 'scale(1)';
+                    }, 300);
+                });
+            }
             
             // 为功能卡片添加悬停效果增强
             const featureCards = document.querySelectorAll('.feature-card');
             featureCards.forEach(card => {
                 card.addEventListener('mouseenter', function() {
-                    const icon = this.querySelector('.feature-icon i');
-                    icon.style.transform = 'scale(1.2) rotate(10deg)';
+                    this.style.transform = 'translateY(-15px)';
                 });
                 
                 card.addEventListener('mouseleave', function() {
-                    const icon = this.querySelector('.feature-icon i');
-                    icon.style.transform = 'scale(1) rotate(0deg)';
+                    this.style.transform = 'translateY(0)';
                 });
             });
             
             // 平滑滚动导航
-            document.querySelectorAll('nav a').forEach(anchor => {
+            document.querySelectorAll('nav a, .buttons a').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
-                    e.preventDefault();
                     const targetId = this.getAttribute('href');
-                    if(targetId.startsWith('#')) {
+                    
+                    // 如果是页面内锚点链接
+                    if(targetId && targetId.startsWith('#')) {
+                        e.preventDefault();
                         const targetElement = document.querySelector(targetId);
                         if(targetElement) {
                             window.scrollTo({
@@ -746,11 +726,12 @@
                             });
                         }
                     }
+                    // 外部链接已设置target="_blank"，无需处理
                 });
             });
             
             // 按钮点击效果
-            document.querySelectorAll('.btn').forEach(button => {
+            document.querySelectorAll('.btn, .social-links a').forEach(button => {
                 button.addEventListener('click', function(e) {
                     // 创建涟漪效果
                     const ripple = document.createElement('span');

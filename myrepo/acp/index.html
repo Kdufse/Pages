@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>APatch - 新的安卓内核根解决方案</title>
+    <title>ACPatch - 新的安卓内核根解决方案</title>
+    <link rel="icon" type="image/png" href="./logo.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -11,24 +12,75 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
         }
         
         :root {
+            /* 浅色模式变量 */
             --primary-color: #2ecc71;
             --primary-dark: #27ae60;
             --secondary-color: #3498db;
             --dark-color: #2c3e50;
+            --footer-color: #2c3e50;      /*页脚*/
             --light-color: #ecf0f1;
             --text-color: #333;
             --text-light: #777;
+            --bg-color: #fff;
+            --card-bg: #f1f1f1;
+            --section-bg: #f9f9f9;
             --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             --transition: all 0.3s ease;
         }
         
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #2ecc71;
+            --primary-dark: #27ae60;
+            --secondary-color: #3498db;
+            --dark-color: #ffffff;
+            --footer-color: #222f41;      /*页脚*/
+            --light-color: #ffffff;
+            --text-color: #ecf0f1;
+            --text-light: #bdc3c7;
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --section-bg: #1a1a1a;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
         body {
-            background-color: #fff;
+            background-color: var(--bg-color);
             color: var(--text-color);
             overflow-x: hidden;
+        }
+        
+        /* 主题切换按钮 */
+        .theme-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            z-index: 999;
+            border: none;
+            font-size: 1.3rem;
+            transition: var(--transition);
+        }
+        
+        .theme-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .theme-toggle i {
+            transition: transform 0.5s ease;
         }
         
         /* 头部导航 */
@@ -41,10 +93,19 @@
             width: 100%;
             top: 0;
             z-index: 1000;
-            background-color: rgba(255, 255, 255, 0.95);
+            background-color: rgba(var(--bg-color-rgb), 0.95);
             backdrop-filter: blur(10px);
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             animation: slideDown 0.8s ease;
+        }
+        
+        /* 计算RGB值用于半透明背景 */
+        :root {
+            --bg-color-rgb: 255, 255, 255;
+        }
+        
+        [data-theme="dark"] {
+            --bg-color-rgb: 18, 18, 18;
         }
         
         .logo {
@@ -95,6 +156,7 @@
             align-items: center;
             justify-content: space-between;
             min-height: 100vh;
+            background-color: var(--bg-color);
         }
         
         .hero-content {
@@ -181,12 +243,12 @@
         }
         
         .btn-light {
-            background-color: #f1f1f1;
+            background-color: var(--card-bg);
             color: var(--dark-color);
         }
         
         .btn-light:hover {
-            background-color: #d5dbdb;
+            background-color: var(--light-color);
             transform: translateY(-5px);
         }
         
@@ -212,7 +274,7 @@
         /* 功能卡片区 */
         .features {
             padding: 6rem 5%;
-            background-color: #f9f9f9;
+            background-color: var(--section-bg);
         }
         
         .features h2 {
@@ -229,7 +291,7 @@
         }
         
         .feature-card {
-            background-color: #f1f1f1;
+            background-color: var(--card-bg);
             border-radius: 12px;
             padding: 2.5rem 2rem;
             box-shadow: var(--shadow);
@@ -256,7 +318,7 @@
         
         /* 页脚 */
         footer {
-            background-color: var(--dark-color);
+            background-color: var(--footer-color);
             color: white;
             text-align: center;
             padding: 3rem 5%;
@@ -377,6 +439,13 @@
             .features-grid {
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             }
+            
+            .theme-toggle {
+                bottom: 20px;
+                right: 20px;
+                width: 45px;
+                height: 45px;
+            }
         }
         
         @media (max-width: 768px) {
@@ -410,6 +479,14 @@
             .buttons {
                 justify-content: center;
             }
+            
+            .theme-toggle {
+                bottom: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
         }
         
         /* 滚动动画类 */
@@ -426,16 +503,22 @@
     </style>
 </head>
 <body>
+    <!-- 主题切换按钮 -->
+    <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+        <i class="fas fa-moon"></i>
+    </button>
+
     <!-- 头部导航 -->
     <header>
         <div class="logo">
             <i class="fas fa-code-branch"></i>
-            <span>APatch</span> Plus
+            <span>ACPatch</span> Plus
         </div>
         <nav>
             <ul>
                 <li><a href="#home">首页</a></li>
                 <li><a href="#features">功能</a></li>
+                <li><a href="https://t.me/ACPatch">Telegram</a></li>
             </ul>
         </nav>
     </header>
@@ -444,23 +527,22 @@
     <main>
         <section class="hero" id="home">
             <div class="hero-content">
-                <h1>APatch Plus<br><span>新的安卓内核根解决方案</span></h1>
+                <h1>ACPatch<br><span>新的安卓内核根解决方案</span></h1>
                 <div class="version">Android 内核版本 3.18-6.12 的通用根解决方案</div>
-                <p class="description">APatchPlus 是一个基于FolkPatch并使用项目XZPatch的Android内核级Root解决方案，相对于用户级Root拥有更高的隐藏性，同时会拒绝Magisk和KernelSU的模块系统加载。</p>
+                <p class="description">ACPatch 是一个基于FolkPatch并使用项目XZPatch的Android内核级Root解决方案，相对于用户级Root拥有更高的隐藏性，同时会拒绝Magisk和KernelSU的模块系统加载。</p>
                 <div class="buttons">
-                    <!-- 为按钮添加示例链接 -->
+                    <!-- 按钮链接 -->
                     <a href="https://apatch.dev/what-is-apatch.html" target="_blank" class="btn btn-primary">
                         <i class="fas fa-play-circle"></i> 开始
                     </a>
-                    <a href="https://github.com/Kdufse/APatch-Plus" target="_blank" class="btn btn-secondary">
+                    <a href="https://github.com/Kdufse/ACPatch" target="_blank" class="btn btn-secondary">
                         <i class="fab fa-github"></i> GitHub 上查看
                     </a>
                 </div>
             </div>
             <div class="hero-image">
                 <div class="android-image">
-                    <!-- 这里替换为您的本地图片 -->
-                    <img src="../.Image/plus.png" alt="APatchPlus图标" id="apatch-logo">
+                    <img src="./logo.png" alt="ACPatch图标" id="apatch-logo">
                 </div>
             </div>
         </section>
@@ -471,17 +553,17 @@
             <div class="features-grid">
                 <div class="feature-card fade-in">
                     <h3>基于内核的</h3>
-                    <p>APatchPlus 运行在内核空间，比用户空间根具有更高的隐藏性和控制。</p>
+                    <p>ACPatch 运行在内核空间，比用户空间根具有更高的隐藏性和控制。</p>
                 </div>
                 
                 <div class="feature-card fade-in">
-                    <h3>ROOT访问控制</h3>
-                    <p>只有被允许的应用才能访问或看到用户，其他应用都不知道这一点。</p>
+                    <h3>SuperUser</h3>
+                    <p>比Root更高的权限，用于控制Root权限和KPModule加载。</p>
                 </div>
                 
                 <div class="feature-card fade-in">
                     <h3>APModule</h3>
-                    <p>支持类似Magisk的模块。</p>
+                    <p>支持Magisk/KernelSU模块。</p>
                 </div>
                 
                 <div class="feature-card fade-in">
@@ -495,24 +577,80 @@
     <!-- 页脚 -->
     <footer>
         <div class="footer-content">
-            <h3>APatch 项目</h3>
-            <p>开源的安卓内核级根解决方案，为开发者和高级用户提供强大的设备控制能力。</p>
+            <h3>ACPatch 项目</h3>
+            <p>开源的安卓内核级Root解决方案。</p>
             <div class="social-links">
                 <!-- 为社交媒体链接添加示例链接 -->
-                <a href="https://github.com/apatch-dev" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="https://t.me/apatch_official" target="_blank"><i class="fab fa-telegram"></i></a>
-                <a href="https://twitter.com/apatch_project" target="_blank"><i class="fab fa-twitter"></i></a>
-                <a href="https://discord.gg/apatch" target="_blank"><i class="fab fa-discord"></i></a>
+                <a href="https://github.com/Kdufse/ACPatch" target="_blank"><i class="fab fa-github"></i></a>
+                <a href="https://t.me/ACPatch" target="_blank"><i class="fab fa-telegram"></i></a>
             </div>
             <div class="copyright">
-                &copy; 2024 APatch 项目. 本页面仅为演示用途，APatch是开源项目。
+                &copy; 2026 本页面由Github-Pages提供。
             </div>
         </div>
     </footer>
 
     <script>
-        // 滚动动画
+        // 主题切换功能
         document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const themeIcon = themeToggle.querySelector('i');
+            
+            // 检测系统主题偏好
+            const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+            
+            // 从本地存储获取主题设置，如果没有则使用系统设置
+            const savedTheme = localStorage.getItem('theme');
+            
+            // 设置初始主题
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                updateThemeIcon(savedTheme);
+            } else if (prefersDarkScheme.matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                updateThemeIcon('dark');
+            }
+            
+            // 监听系统主题变化
+            prefersDarkScheme.addEventListener('change', function(e) {
+                if (!savedTheme) { // 只有当用户没有手动设置主题时才跟随系统
+                    const newTheme = e.matches ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    updateThemeIcon(newTheme);
+                }
+            });
+            
+            // 切换主题
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                // 更新主题
+                document.documentElement.setAttribute('data-theme', newTheme);
+                updateThemeIcon(newTheme);
+                
+                // 保存用户选择到本地存储
+                localStorage.setItem('theme', newTheme);
+                
+                // 添加点击动画
+                themeIcon.style.transform = 'rotate(360deg)';
+                setTimeout(() => {
+                    themeIcon.style.transform = 'rotate(0)';
+                }, 500);
+            });
+            
+            // 更新主题图标
+            function updateThemeIcon(theme) {
+                if (theme === 'dark') {
+                    themeIcon.className = 'fas fa-sun';
+                    themeIcon.title = '切换到浅色模式';
+                } else {
+                    themeIcon.className = 'fas fa-moon';
+                    themeIcon.title = '切换到深色模式';
+                }
+            }
+            
+            // 滚动动画
             const fadeElements = document.querySelectorAll('.fade-in');
             
             const fadeInOnScroll = function() {
